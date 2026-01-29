@@ -4,6 +4,163 @@
  */
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
-const deployedContracts = {} as const;
+// ✅ Key fix: don't use `as const` here.
+// `as const` makes TS infer ultra-narrow literal types that later break
+// in the app type helpers (e.g. indexing on unions like `string | bigint`).
+const deployedContracts: GenericContractsDeclaration = {
+  31337: {
+    PredictionMarket: {
+      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      abi: [
+        {
+          inputs: [
+            { internalType: "address", name: "_liquidityProvider", type: "address" },
+            { internalType: "address", name: "_oracle", type: "address" },
+            { internalType: "string", name: "_question", type: "string" },
+            { internalType: "uint256", name: "_initialTokenValue", type: "uint256" },
+            { internalType: "uint8", name: "_initialYesProbability", type: "uint8" },
+            { internalType: "uint8", name: "_percentageToLock", type: "uint8" },
+          ],
+          stateMutability: "payable",
+          type: "constructor",
+        },
+        {
+          inputs: [{ internalType: "address", name: "owner", type: "address" }],
+          name: "OwnableInvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [{ internalType: "address", name: "account", type: "address" }],
+          name: "OwnableUnauthorizedAccount",
+          type: "error",
+        },
+        { inputs: [], name: "PredictionMarket__ETHTransferFailed", type: "error" },
+        { inputs: [], name: "PredictionMarket__InsufficientNOReserve", type: "error" },
+        { inputs: [], name: "PredictionMarket__InsufficientYESReserve", type: "error" },
+        { inputs: [], name: "PredictionMarket__InvalidPercentageToLock", type: "error" },
+        { inputs: [], name: "PredictionMarket__InvalidProbability", type: "error" },
+        { inputs: [], name: "PredictionMarket__MustProvideETHForInitialLiquidity", type: "error" },
+        { inputs: [], name: "PredictionMarket__TokenTransferFailed", type: "error" },
+        {
+          anonymous: false,
+          inputs: [
+            { indexed: true, internalType: "address", name: "previousOwner", type: "address" },
+            { indexed: true, internalType: "address", name: "newOwner", type: "address" },
+          ],
+          name: "OwnershipTransferred",
+          type: "event",
+        },
+        {
+          inputs: [],
+          name: "PRECISION",
+          outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        { inputs: [], name: "addLiquidity", outputs: [], stateMutability: "payable", type: "function" },
+        {
+          inputs: [],
+          name: "i_initialTokenValue",
+          outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "i_initialYesProbability",
+          outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "i_noToken",
+          outputs: [{ internalType: "contract PredictionMarketToken", name: "", type: "address" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "i_oracle",
+          outputs: [{ internalType: "address", name: "", type: "address" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "i_percentageLocked",
+          outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "i_yesToken",
+          outputs: [{ internalType: "contract PredictionMarketToken", name: "", type: "address" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [{ internalType: "address", name: "", type: "address" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [{ internalType: "uint256", name: "_ethToWithdraw", type: "uint256" }],
+          name: "removeLiquidity",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        { inputs: [], name: "renounceOwnership", outputs: [], stateMutability: "nonpayable", type: "function" },
+        {
+          inputs: [],
+          name: "s_ethCollateral",
+          outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "s_lpTradingRevenue",
+          outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "s_question",
+          outputs: [{ internalType: "string", name: "", type: "string" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
+          name: "transferOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        owner: "@openzeppelin/contracts/access/Ownable.sol",
+        renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+        transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+      },
+    },
+    PredictionMarketTokenNo: {
+      address: "0xE451980132E65465d0a498c53f0b5227326Dd73F",
+      abi: [],
+      inheritedFunctions: {},
+    },
+    PredictionMarketTokenYes: {
+      address: "0x75537828f2ce51be7289709686A69CbFDbB714F1",
+      abi: [],
+      inheritedFunctions: {},
+    },
+  },
+};
 
-export default deployedContracts satisfies GenericContractsDeclaration;
+export default deployedContracts;
