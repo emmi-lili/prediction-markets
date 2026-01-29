@@ -34,14 +34,14 @@ export function PredictionBuySellShare({ optionIndex, colorScheme }: { optionInd
   const { data: totalPriceInEth } = useScaffoldReadContract({
     contractName: "PredictionMarket",
     functionName: "getBuyPriceInEth",
-    args: [optionIndex, tokenBuyAmount],
+    args: [BigInt(optionIndex), tokenBuyAmount],
     watch: true,
   });
 
   const { data: sellTotalPriceInEth } = useScaffoldReadContract({
     contractName: "PredictionMarket",
     functionName: "getSellPriceInEth",
-    args: [optionIndex, tokenSellAmount],
+    args: [BigInt(optionIndex), tokenSellAmount],
     watch: true,
   });
 
@@ -158,7 +158,7 @@ export function PredictionBuySellShare({ optionIndex, colorScheme }: { optionInd
                       try {
                         await writeYourContractAsync({
                           functionName: "buyTokensWithETH",
-                          args: [optionIndex, tokenBuyAmount],
+                          args: [BigInt(optionIndex), tokenBuyAmount],
                           value: totalPriceInEth,
                         });
                       } catch (e) {
@@ -223,7 +223,7 @@ export function PredictionBuySellShare({ optionIndex, colorScheme }: { optionInd
                         try {
                           await writeYourContractAsync({
                             functionName: "sellTokensForEth",
-                            args: [optionIndex, tokenSellAmount],
+                            args: [BigInt(optionIndex), tokenSellAmount],
                           });
                         } catch (e) {
                           console.error("Error selling tokens:", e);
