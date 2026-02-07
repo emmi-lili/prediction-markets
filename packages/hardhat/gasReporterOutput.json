@@ -53,26 +53,49 @@
     "contract": "PredictionMarket",
     "method": "addLiquidity",
     "fnSig": "addLiquidity()",
+    "intrinsicGas": [],
+    "callData": [],
+    "gasData": [],
+    "numberOfCalls": 0
+   },
+   "PredictionMarket_06a9cd5e": {
+    "key": "06a9cd5e",
+    "isCall": false,
+    "contract": "PredictionMarket",
+    "method": "buyTokensWithETH",
+    "fnSig": "buyTokensWithETH(uint8,uint256)",
     "intrinsicGas": [
-     21064,
-     21064,
-     21064
+     21392,
+     21392,
+     21392,
+     21392,
+     21392,
+     21392,
+     21392
     ],
     "callData": [
+     0,
+     0,
+     0,
+     0,
      0,
      0,
      0
     ],
     "gasData": [
-     65895,
-     65895,
-     65895
+     96304,
+     96304,
+     96304,
+     96304,
+     96304,
+     96304,
+     96304
     ],
-    "numberOfCalls": 3,
-    "executionGasAverage": 65895,
+    "numberOfCalls": 7,
+    "executionGasAverage": 96304,
     "calldataGasAverage": 0,
-    "min": 65895,
-    "max": 65895
+    "min": 96304,
+    "max": 96304
    },
    "PredictionMarket_2dc7fd76": {
     "key": "2dc7fd76",
@@ -212,10 +235,23 @@
     "contract": "PredictionMarket",
     "method": "report",
     "fnSig": "report(uint8)",
-    "intrinsicGas": [],
-    "callData": [],
-    "gasData": [],
-    "numberOfCalls": 0
+    "intrinsicGas": [
+     21192,
+     21192
+    ],
+    "callData": [
+     0,
+     0
+    ],
+    "gasData": [
+     45618,
+     45618
+    ],
+    "numberOfCalls": 2,
+    "executionGasAverage": 45618,
+    "calldataGasAverage": 0,
+    "min": 45618,
+    "max": 45618
    },
    "PredictionMarket_65e23abc": {
     "key": "65e23abc",
@@ -283,6 +319,36 @@
     "gasData": [],
     "numberOfCalls": 0
    },
+   "PredictionMarket_70a38aee": {
+    "key": "70a38aee",
+    "isCall": false,
+    "contract": "PredictionMarket",
+    "method": "sellTokensForEth",
+    "fnSig": "sellTokensForEth(uint8,uint256)",
+    "intrinsicGas": [
+     21392,
+     21392,
+     21392,
+     21392
+    ],
+    "callData": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "gasData": [
+     61266,
+     61266,
+     61266,
+     61266
+    ],
+    "numberOfCalls": 4,
+    "executionGasAverage": 61266,
+    "calldataGasAverage": 0,
+    "min": 61266,
+    "max": 61266
+   },
    "PredictionMarket_f2fde38b": {
     "key": "f2fde38b",
     "isCall": false,
@@ -311,10 +377,29 @@
     "contract": "PredictionMarketToken",
     "method": "approve",
     "fnSig": "approve(address,uint256)",
-    "intrinsicGas": [],
-    "callData": [],
-    "gasData": [],
-    "numberOfCalls": 0
+    "intrinsicGas": [
+     21632,
+     21632,
+     21632,
+     21632
+    ],
+    "callData": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "gasData": [
+     45981,
+     45981,
+     45981,
+     45981
+    ],
+    "numberOfCalls": 4,
+    "executionGasAverage": 45981,
+    "calldataGasAverage": 0,
+    "min": 45981,
+    "max": 45981
    },
    "PredictionMarketToken_70a08231": {
     "key": "70a08231",
@@ -482,20 +567,30 @@
    {
     "name": "PredictionMarket",
     "gasData": [
-     2712614,
-     2712614,
-     2712614,
-     2712614,
-     2712614,
-     2712614,
-     2712614,
-     2712614,
-     2712614,
-     2712614,
-     2712614,
-     2712614,
-     2712614,
-     2712614
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248,
+     3008248
     ],
     "callData": [
      0,
@@ -511,13 +606,23 @@
      0,
      0,
      0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
      0
     ],
-    "executionGasAverage": 2712614,
+    "executionGasAverage": 3008248,
     "calldataGasAverage": 0,
-    "min": 2712614,
-    "max": 2712614,
-    "percent": 9
+    "min": 3008248,
+    "max": 3008248,
+    "percent": 10
    },
    {
     "name": "PredictionMarketToken",

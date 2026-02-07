@@ -29,6 +29,7 @@ contract PredictionMarket is Ownable {
 
     // Stubs / future checkpoints
     error PredictionMarket__NotImplementedYet();
+    error PredictionMarket__AmountMustBeGreaterThanZero();
 
     /////////////////////////
     /// Events //////////////
@@ -85,6 +86,18 @@ contract PredictionMarket is Ownable {
         if (!s_isReported) {
             revert PredictionMarket__PredictionNotReported();
         }
+        _;
+    }
+
+    modifier notOwner() {
+        if (msg.sender == owner()) {
+            revert PredictionMarket__OwnerCannotCall();
+        }
+        _;
+    }
+
+    modifier amountGreaterThanZero(uint256 amount) {
+        if (amount == 0) revert PredictionMarket__AmountMustBeGreaterThanZero();
         _;
     }
 
@@ -249,6 +262,77 @@ contract PredictionMarket is Ownable {
     ////////////////////////////////
     /// Future checkpoints stubs ///
     ////////////////////////////////
+
+    function buyTokensWithETH(Outcome _outcome, uint256 _amountTokenToBuy)
+    external
+    payable
+    amountGreaterThanZero(_amountTokenToBuy)
+    predictionNotReported
+    notOwner
+{
+    uint256 ethNeeded = getBuyPriceInEth(_outcome, _amountTokenToBuy);
+
+    if (msg.value != ethNeeded) {
+        revert PredictionMarket__MustSendExactETHAmount();
+    }
+
+    PredictionMarketToken optionToken =
+        _outcome == Outcome.YES ? i_yesToken : i_noToken;
+
+    if (_amountTokenToBuy > optionToken.balanceOf(address(this))) {
+        revert PredictionMarket__InsufficientTokenReserve(_outcome, _amountTokenToBuy);
+    }
+
+    s_lpTradingRevenue += msg.value;
+
+    bool success = optionToken.transfer(msg.sender, _amountTokenToBuy);
+    if (!success) {
+        revert PredictionMarket__TokenTransferFailed();
+    }
+
+    emit TokensPurchased(msg.sender, _outcome, _amountTokenToBuy, msg.value);
+}
+
+
+    function sellTokensForEth(Outcome _outcome, uint256 _amountTokenToSell)
+        external
+        amountGreaterThanZero(_amountTokenToSell)
+        predictionNotReported
+        notOwner
+    {
+        PredictionMarketToken optionToken =
+            _outcome == Outcome.YES ? i_yesToken : i_noToken;
+
+        uint256 userBalance = optionToken.balanceOf(msg.sender);
+        if (_amountTokenToSell > userBalance) {
+            revert PredictionMarket__InsufficientBalance(_amountTokenToSell, userBalance);
+        }
+
+        uint256 allowance = optionToken.allowance(msg.sender, address(this));
+        if (_amountTokenToSell > allowance) {
+            revert PredictionMarket__InsufficientAllowance(_amountTokenToSell, allowance);
+        }
+
+        uint256 ethToSend = getSellPriceInEth(_outcome, _amountTokenToSell);
+
+        if (ethToSend > s_lpTradingRevenue) {
+            revert PredictionMarket__InsufficientLiquidity();
+        }
+
+        s_lpTradingRevenue -= ethToSend;
+
+        bool success = optionToken.transferFrom(msg.sender, address(this), _amountTokenToSell);
+        if (!success) {
+            revert PredictionMarket__TokenTransferFailed();
+        }
+
+        (bool ethSuccess,) = msg.sender.call{value: ethToSend}("");
+        if (!ethSuccess) {
+            revert PredictionMarket__ETHTransferFailed();
+        }
+
+        emit TokensSold(msg.sender, _outcome, _amountTokenToSell, ethToSend);
+    }
 
     function getBuyPriceInEth(Outcome _outcome, uint256 _tradingAmount) public view returns (uint256) {
         return _calculatePriceInEth(_outcome, _tradingAmount, false);
