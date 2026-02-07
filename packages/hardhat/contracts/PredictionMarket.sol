@@ -15,6 +15,8 @@ contract PredictionMarket is Ownable {
     error PredictionMarket__ETHTransferFailed();
     error PredictionMarket__InsufficientYESReserve();
     error PredictionMarket__InsufficientNOReserve();
+    error PredictionMarket__InsufficientLiquidity();
+
 
     // Checkpoint 5 errors
     error PredictionMarket__PredictionAlreadyReported();
@@ -245,40 +247,63 @@ contract PredictionMarket is Ownable {
     /// Future checkpoints stubs ///
     ////////////////////////////////
 
-    function getBuyPriceInEth(uint256 /* optionIndex */, uint256 /* tokenBuyAmount */)
-        external
-        pure
-        returns (uint256)
-    {
-        // Later checkpoint will implement real pricing
-        return 0;
+   function getBuyPriceInEth(Outcome _outcome, uint256 _tradingAmount) public view returns (uint256) {
+    return _calculatePriceInEth(_outcome, _tradingAmount, false);
+}
+
+function getSellPriceInEth(Outcome _outcome, uint256 _tradingAmount) public view returns (uint256) {
+    return _calculatePriceInEth(_outcome, _tradingAmount, true);
+}
+
+function _calculatePriceInEth(Outcome _outcome, uint256 _tradingAmount, bool _isSelling)
+    private
+    view
+    returns (uint256)
+{
+    (uint256 currentTokenReserve, uint256 currentOtherTokenReserve) = _getCurrentReserves(_outcome);
+
+    // Ensure sufficient liquidity when buying
+    if (!_isSelling) {
+        if (currentTokenReserve < _tradingAmount) {
+            revert PredictionMarket__InsufficientLiquidity();
+        }
     }
 
-    function getSellPriceInEth(uint256 /* optionIndex */, uint256 /* tokenSellAmount */)
-        external
-        pure
-        returns (uint256)
-    {
-        // Later checkpoint will implement real pricing
-        return 0;
-    }
+    uint256 totalTokenSupply = i_yesToken.totalSupply();
 
-    function buyTokensWithETH(uint256 /* optionIndex */, uint256 /* tokenBuyAmount */)
-        external
-        payable
-    {
-        revert PredictionMarket__NotImplementedYet();
-    }
+    // Before trade
+    uint256 currentTokenSoldBefore = totalTokenSupply - currentTokenReserve;
+    uint256 currentOtherTokenSold = totalTokenSupply - currentOtherTokenReserve;
+    uint256 totalTokensSoldBefore = currentTokenSoldBefore + currentOtherTokenSold;
+    uint256 probabilityBefore = _calculateProbability(currentTokenSoldBefore, totalTokensSoldBefore);
 
-    function sellTokensForEth(uint256 /* optionIndex */, uint256 /* tokenSellAmount */)
-        external
-    {
-        revert PredictionMarket__NotImplementedYet();
-    }
+    // After trade
+    uint256 currentTokenReserveAfter =
+        _isSelling ? currentTokenReserve + _tradingAmount : currentTokenReserve - _tradingAmount;
+    uint256 currentTokenSoldAfter = totalTokenSupply - currentTokenReserveAfter;
+    uint256 totalTokensSoldAfter =
+        _isSelling ? totalTokensSoldBefore - _tradingAmount : totalTokensSoldBefore + _tradingAmount;
 
-    function redeemWinningTokens(uint256 /* tokenAmount */) external {
-        revert PredictionMarket__NotImplementedYet();
+    uint256 probabilityAfter = _calculateProbability(currentTokenSoldAfter, totalTokensSoldAfter);
+
+    // Compute final price
+    uint256 probabilityAvg = (probabilityBefore + probabilityAfter) / 2;
+    return (i_initialTokenValue * probabilityAvg * _tradingAmount) / (PRECISION * PRECISION);
+}
+
+function _getCurrentReserves(Outcome _outcome) private view returns (uint256, uint256) {
+    if (_outcome == Outcome.YES) {
+        return (i_yesToken.balanceOf(address(this)), i_noToken.balanceOf(address(this)));
+    } else {
+        return (i_noToken.balanceOf(address(this)), i_yesToken.balanceOf(address(this)));
     }
+}
+
+function _calculateProbability(uint256 tokensSold, uint256 totalSold) private pure returns (uint256) {
+    return (tokensSold * PRECISION) / totalSold;
+}
+
+
 
     function resolveMarketAndWithdraw() external onlyOwner predictionReported returns (uint256 ethRedeemed) {
     uint256 contractWinningTokens = s_winningToken.balanceOf(address(this));
