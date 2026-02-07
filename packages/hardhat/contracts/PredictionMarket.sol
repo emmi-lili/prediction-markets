@@ -73,11 +73,12 @@ contract PredictionMarket is Ownable {
     }
 
     modifier predictionReported() {
-        if (!s_isReported) {
-            revert PredictionMarket__PredictionNotReported();
-        }
-        _;
+    if (!s_isReported) {
+        revert PredictionMarket__PredictionNotReported();
     }
+    _;
+}
+
 
     /////////////////////////
     /// Constructor /////////
