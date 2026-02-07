@@ -28,6 +28,8 @@ contract PredictionMarket is Ownable {
     /// Events //////////////
     /////////////////////////
     event MarketReported(address indexed oracle, Outcome winningOutcome, address winningToken);
+    event MarketResolved(address indexed owner, uint256 totalEthWithdrawn);
+
 
     /////////////////////////
     /// Enums ///////////////
@@ -278,7 +280,31 @@ contract PredictionMarket is Ownable {
         revert PredictionMarket__NotImplementedYet();
     }
 
-    function resolveMarketAndWithdraw() external {
-        revert PredictionMarket__NotImplementedYet();
+    function resolveMarketAndWithdraw() external onlyOwner predictionReported returns (uint256 ethRedeemed) {
+    uint256 contractWinningTokens = s_winningToken.balanceOf(address(this));
+    if (contractWinningTokens > 0) {
+        ethRedeemed = (contractWinningTokens * i_initialTokenValue) / PRECISION;
+
+        if (ethRedeemed > s_ethCollateral) {
+            ethRedeemed = s_ethCollateral;
+        }
+        s_ethCollateral -= ethRedeemed;
     }
+
+    uint256 totalEthToSend = ethRedeemed + s_lpTradingRevenue;
+
+    s_lpTradingRevenue = 0;
+
+    s_winningToken.burn(address(this), contractWinningTokens);
+
+    (bool success,) = msg.sender.call{value: totalEthToSend}("");
+    if (!success) {
+        revert PredictionMarket__ETHTransferFailed();
+    }
+
+    emit MarketResolved(msg.sender, totalEthToSend);
+
+    return ethRedeemed;
+}
+
 }
